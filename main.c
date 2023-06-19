@@ -226,6 +226,19 @@ tipoMapa *mostrarMesa(List *cartasJugador, tipoCarta cartaArriba, int *color){
   return firstList(cartasJugador);
 }
 
+void turnojugador(List *barajajugador){
+int centro;
+List *aux = barajajugador;
+firstList(aux);
+while(nextList(aux)!=NULL){
+  nextList(aux);
+  centro++;
+}
+centro = trunc(centro/2);
+
+
+}
+
 void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves)
 {
   //Si la dirección es hacia la derecha, que será al principio, valdrá 0, si es al otro lado, valdrá 1.
@@ -287,7 +300,8 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
       CartaArriba0 = cartaJugada;
       
       tipoMapa* cartaNode = firstList(jugadorAct->cartasJugador);
-      while (cartaNode != cartaJugada) {
+      while (cartaNode->carta.color != cartaJugada->carta.color || cartaNode->carta.numero != cartaJugada->carta.numero || cartaNode->carta.codigo>12) {
+          turnojugador(jugadorAct->cartasJugador);
           tipoMapa* cartaMapa = (tipoMapa*)cartaNode;
           tipoCarta carta = cartaMapa->carta;
           cartaNode = nextList(jugadorAct->cartasJugador);
