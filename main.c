@@ -6,12 +6,8 @@
 #include "Map.h"
 #include "Stack.h"
 #include <time.h>
-#include <windows.h>
-#include <conio.h>
-#include "gotoxy.h"
 
-#define KEY_DER 77
-#define KEY_IZQ 75
+
 
 //Estructuras
 typedef struct{
@@ -217,27 +213,104 @@ void sacarCarta(List *listaJugadores, Map *mapa, int *contJugadores){
 
 void theGameEnd(char *nombreJugador)
 {
-  printf("wena ganaste");
+  printf("wena ganaste\n\n");
   return;
 }
 
-tipoMapa *mostrarMesa(List *cartasJugador, tipoCarta cartaArriba, int *color){
+tipoMapa *puntocentral(List *barajajugador){
+  int contcentro = 0;
+  tipoMapa *aux = firstList(barajajugador);
+
+  while(aux!=NULL){
+    aux = nextList(barajajugador);
+    contcentro++;
+  }
   
-  return firstList(cartasJugador);
+  int centro = trunc(contcentro/2);
+  
+  aux = firstList(barajajugador);
+  while(centro!=0){
+    aux=nextList(barajajugador);
+    centro--;
+  }
+  return aux;
 }
 
-void turnojugador(List *barajajugador){
-int centro;
-List *aux = barajajugador;
-firstList(aux);
-while(nextList(aux)!=NULL){
-  nextList(aux);
-  centro++;
+tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas){ 
+  
+  tipoMapa *centro = puntocentral(barajajugador);
+  tipoMapa *next = nextList(barajajugador);
+  tipoMapa *verificarNext = nextList(barajajugador);
+  centro = puntocentral(barajajugador);
+  tipoMapa *prev = prevList(barajajugador); 
+  tipoMapa *verificarPrev = prevList(barajajugador);
+
+  centro = puntocentral(barajajugador);
+  
+  char vacio[4];
+  strcpy(vacio,"xxx");
+  int tecla;
+  while(true){
+    
+    printf("            %i\n       ", centro->carta.clave);  
+    if(prev != NULL)printf("%i",prev->carta.clave);
+    if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
+    if(verificarPrev != NULL)printf("%s",vacio);
+    if(verificarNext!=NULL)printf("               %s\n", vacio);
+
+    scanf("%i", &tecla);
+    
+    switch(tecla){
+  
+      case 77:{//izq
+        prev = centro;
+        centro = nextList(barajajugador);
+        next = nextList(barajajugador);
+        break;
+      }
+      
+      case 75:{//der
+        next = centro;
+        centro = prevList(barajajugador);
+        prev =  prevList(barajajugador);
+        break;
+      }
+      
+      case 32:{
+        //Hay que hacer lo visual
+      
+        //voy a verificar si coinicide, en caso de no coincidir se devolvería a la seleccion de cartas
+        //Comprobar si puede tirar la carta
+      
+        //comprobar si tiro un mas algo teniendo una suma pendiente
+        if(sumaDeCartas > 0 ){
+          if(centro->carta.codigo == 13 || centro->carta.codigo == 12){
+            return centro;
+          }
+        }
+      
+        //comprobar si coincide el color
+        if(centro->carta.color == CartaArriba.color){
+          return centro;
+        }
+      
+        //comprobar si coincide el numero/simbolo
+        if(centro->carta.codigo == CartaArriba.codigo){
+          return centro;
+        }
+        break;
+
+        return centro;
+      }
+      
+    }
+    //A estas alturas ya tenemos la carta que jugó el jugador
+  }
+  
 }
-centro = trunc(centro/2);
 
 
-}
+
 
 void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves)
 {
@@ -245,21 +318,21 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
   int direccion = 0;
   int sumaDeCartas = 0;
   int color = 0;
-  tipoMapa *CartaArriba0 = repartir(mapa, vectorClaves);
-  tipoCarta CartaArriba = CartaArriba0->carta;
+  tipoMapa *CartaArribaMapa = repartir(mapa, vectorClaves);
+  tipoCarta CartaArriba = CartaArribaMapa->carta;
   tipoMapa *CartaAbajo = malloc(sizeof(tipoCarta));
   
   tipoJugador *jugadorAct = firstList(listaJugadores);
 
   color=CartaArriba.color;
 
+  //int vueltas = 30;
   while(true){//(true)
-    tipoMapa *cartaJugada = mostrarMesa(jugadorAct->cartasJugador, CartaArriba, &color); //aspecto: se muestran las cartas del jugador y la cartaArriba
+    mostrarListasJugadores(listaJugadores);
+    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArriba, sumaDeCartas); //aspecto: se muestran las cartas del jugador y la cartaArriba
     //Retornará la carta jugada, en caso de que el jugador no tenga una carta para jugar o
     //salte su turno, se retornará NULL.
-
-    printf("%i\n\n\n", CartaArriba.clave);
-
+    //tipoMapa *cartaJugada = firstList(jugadorAct->cartasJugador);
     
     if(cartaJugada == NULL && sumaDeCartas > 0){
         while(sumaDeCartas != 0){
@@ -269,7 +342,7 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
     }
 
     if(cartaJugada != NULL){
-    
+      
       if(cartaJugada->carta.codigo==12){
         sumaDeCartas=sumaDeCartas+2;
       }
@@ -280,6 +353,17 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
         if(direccion==0) direccion=1;
         if(direccion==1) direccion=0;
       }
+      
+      //vueltas--;
+      
+      CartaAbajo = CartaArribaMapa;
+      CartaArribaMapa = cartaJugada;
+
+      tipoMapa* cartaNode = firstList(jugadorAct->cartasJugador);
+      while (cartaNode != cartaJugada) {
+          cartaNode = nextList(jugadorAct->cartasJugador);
+      }
+      popCurrent(jugadorAct->cartasJugador);
       
       if(cartaJugada->carta.codigo==10){
         if(direccion==0){
@@ -294,28 +378,15 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
             jugadorAct = lastList(listaJugadores);
           }
         }
-      }
-
-      CartaAbajo = CartaArriba0;
-      CartaArriba0 = cartaJugada;
-      
-      tipoMapa* cartaNode = firstList(jugadorAct->cartasJugador);
-      while (cartaNode->carta.color != cartaJugada->carta.color || cartaNode->carta.numero != cartaJugada->carta.numero || cartaNode->carta.codigo>12) {
-          turnojugador(jugadorAct->cartasJugador);
-          tipoMapa* cartaMapa = (tipoMapa*)cartaNode;
-          tipoCarta carta = cartaMapa->carta;
-          cartaNode = nextList(jugadorAct->cartasJugador);
-      }
-      popCurrent(jugadorAct->cartasJugador);
-      
+      }      
       CartaAbajo->cont++;
     }
     
-    if(jugadorAct->cartasJugador == NULL){
+    if(firstList(jugadorAct->cartasJugador) == NULL) {
       theGameEnd(jugadorAct->jugador);
-      break;
-    } 
-
+      return;
+    }
+    
     if(direccion==0){
       jugadorAct = nextList(listaJugadores);
       if(jugadorAct == NULL){
@@ -362,10 +433,11 @@ void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *ve
   while(opcion != 0){
     printf("\033[0;37m");
 
- 
-    printf("  Ingrese una cantidad de jugadores entre 2 y 4              \n");
-    printf("  Presione 0 para volver al menu inicial                     \n");
-
+    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
+    printf("║  Ingrese una cantidad de jugadores entre 2 y 4              ║\n");
+    printf("║  Presione 0 para volver al menu inicial                     ║\n");
+    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
+    
     scanf("%d", contJugadores);
     opcion=(*contJugadores);
     getchar();
@@ -378,13 +450,14 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
   //Se crea una variable "opcion" la cual será una condicionante para el ciclo "while" base de nuestro programa
   int opcion = 1;
   while(opcion != 0){
-
-    printf("                  DEFINITIVAMENTE UNON'T :D                 \n");
-
-
-    printf("  Presione 1 para iniciar partida                            \n");
-    printf("  Presione 0 para salir del juego                            \n");
-    printf("\n");
+printf("\033[0;31m");
+    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
+    printf("║                  DEFINITIVAMENTE UNON'T :D                 ║\n");
+    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
+    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
+    printf("║  Presione 1 para iniciar partida                            ║\n");
+    printf("║  Presione 0 para salir del juego                            ║\n");
+    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
     //Se cambia el valor de la variable "opcion" con un valor que desee el usuario realizar
     scanf("%d", &opcion);
     getchar();
