@@ -13,6 +13,8 @@ Carpeta_Imagenes = os.path.join(Carpeta_principal, "imagenes")
 ctk.set_appearance_mode("system")
 ctk.set_default_color_theme("green")
 
+#------------fuente----------
+
 
 
 class Inicio:
@@ -59,28 +61,34 @@ class Inicio:
 class funciones:
     
     def ventana_jugadores_2(self):
+        jugadores = 2
         ventana = ctk.CTkToplevel()
         ventana.title("Ventana de jugadores")
 
     def ventana_jugadores_3(self):
+        jugadores = 3
         ventana = ctk.CTkToplevel()
         ventana.title("Ventana de jugadores")
 
     def ventana_jugadores_4(self):
+        jugadores = 4
         ventana = ctk.CTkToplevel()
         ventana.title("Ventana de jugadores")
 
+    
     def salir(self):
-        ventana = ctk.CTkToplevel()
-        ventana.destroy()
+        self.root.destroy()
 
 
     def backtoMainMenu(self):
-        ventana = ctk.CTkToplevel()
-        ventana.destroy()
-        ventana_back = Inicio()
+        self.root.destroy()
+        Ventana_inicio = Inicio()
+
 
 objeto_func = funciones()
+
+
+        
 
 #-------nueva ventana-------
 class opciones_pre_juego:
@@ -93,9 +101,9 @@ class opciones_pre_juego:
         cont = 0
 
         for texto_boton in self.botones:
-            button = ctk.CTkButton(master=self.root, text= texto_boton, height=50, width=200, command= self.botones[texto_boton])
+            button = ctk.CTkButton(master=self.root, text= texto_boton, height=50, width=200, command= self.botones[texto_boton], anchor=tk.CENTER)
 
-            button.grid(row=cont//2, column=cont%2, padx=5, pady=5)   
+            button.grid(row=cont//1, column=cont%1, padx=5, pady=5)   
             cont += 1
             
 

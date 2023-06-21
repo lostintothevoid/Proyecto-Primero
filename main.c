@@ -244,6 +244,8 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   centro = puntocentral(barajajugador);
   tipoMapa *prev = prevList(barajajugador); 
   tipoMapa *verificarPrev = prevList(barajajugador);
+  tipoMapa *aux;
+    
 
   centro = puntocentral(barajajugador);
   
@@ -251,28 +253,47 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   strcpy(vacio,"xxx");
   int tecla;
   while(true){
-    
+    //El pato ve los prints
+
+    printf("            \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
     printf("            %i\n       ", centro->carta.clave);  
+    
+    
     if(prev != NULL)printf("%i",prev->carta.clave);
+    else {printf("X");}
+    
     if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
-    if(verificarPrev != NULL)printf("%s",vacio);
-    if(verificarNext!=NULL)printf("               %s\n", vacio);
+    else {printf("       X\n   ");  }
+    //if(verificarPrev != NULL)printf("%s",vacio);
+    //if(verificarNext != NULL)printf("               %s\n", vacio);
 
     scanf("%i", &tecla);
     
     switch(tecla){
   
-      case 77:{//izq
+      case 77:{//derecha
+        if(next==NULL){
+          break;
+        }
         prev = centro;
         centro = nextList(barajajugador);
         next = nextList(barajajugador);
+        if(next != NULL){
+          aux = prevList(barajajugador);  
+        }
         break;
       }
       
-      case 75:{//der
+      case 75:{//izquierda
+        if(prev == NULL){
+          break;
+        }
         next = centro;
         centro = prevList(barajajugador);
         prev =  prevList(barajajugador);
+        if(prev != NULL){
+          aux = nextList(barajajugador);
+        }
         break;
       }
       
@@ -298,9 +319,13 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
         if(centro->carta.codigo == CartaArriba.codigo){
           return centro;
         }
-        break;
 
-        return centro;
+        printf("tira otra carta\n\n");
+        break;
+      }
+
+      case 22:{
+        return NULL;
       }
       
     }
@@ -328,12 +353,16 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
 
   //int vueltas = 30;
   while(true){//(true)
-    mostrarListasJugadores(listaJugadores);
-    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArriba, sumaDeCartas); //aspecto: se muestran las cartas del jugador y la cartaArriba
+    //mostrarListasJugadores(listaJugadores);
+    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas); //aspecto: se muestran las cartas del jugador y la cartaArriba
     //Retornará la carta jugada, en caso de que el jugador no tenga una carta para jugar o
     //salte su turno, se retornará NULL.
     //tipoMapa *cartaJugada = firstList(jugadorAct->cartasJugador);
     
+    if(cartaJugada == NULL && sumaDeCartas == 0){
+      pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
+    }
+
     if(cartaJugada == NULL && sumaDeCartas > 0){
         while(sumaDeCartas != 0){
           pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
