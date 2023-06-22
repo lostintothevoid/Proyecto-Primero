@@ -6,8 +6,8 @@
 #include "Map.h"
 #include "Stack.h"
 #include <time.h>
-
-
+#include <conio.h>
+#include <math.h>
 
 //Estructuras
 typedef struct{
@@ -157,8 +157,9 @@ tipoMapa *repartir(Map *mapa, int *vectorClaves){
   */
   //Generar numero aleatorio, usa la libreria time para obtener algo de una semilla basada en el tiempo actual
   //srand(time(NULL));
-   printf("entro a repartir \n");
-  int numeroAleatorio = rand() % 53;
+   printf("entro a repartir\n");
+  //int numeroAleatorio = rand() % 53;
+  int numeroAleatorio = rand() % 54;
 //error en trabajo de punteros
   //Buscar numero en el vector  
   int claveCarta = vectorClaves[numeroAleatorio];
@@ -173,7 +174,7 @@ tipoMapa *repartir(Map *mapa, int *vectorClaves){
       return cartaEntregar;
     }
     printf("claveCarta = %i contador = %i \n",cartaEntregar->carta.clave, cartaEntregar->cont);
-    numeroAleatorio = rand() % 53;
+    numeroAleatorio = rand() % 54;
     claveCarta = vectorClaves[numeroAleatorio];
     cartaEntregar = (tipoMapa *)searchMap(mapa, &claveCarta);
     printf("claveCarta = %i contador = %i \n",cartaEntregar->carta.clave, cartaEntregar->cont);
@@ -245,7 +246,6 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   tipoMapa *prev = prevList(barajajugador); 
   tipoMapa *verificarPrev = prevList(barajajugador);
   tipoMapa *aux;
-    
 
   centro = puntocentral(barajajugador);
   
@@ -255,7 +255,7 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   while(true){
     //El pato ve los prints
 
-    printf("            \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
+    printf("          \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
     printf("            %i\n       ", centro->carta.clave);  
     
     
@@ -267,68 +267,86 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
     //if(verificarPrev != NULL)printf("%s",vacio);
     //if(verificarNext != NULL)printf("               %s\n", vacio);
 
-    scanf("%i", &tecla);
-    
-    switch(tecla){
-  
-      case 77:{//derecha
-        if(next==NULL){
+    if (kbhit())
+    {
+      tecla = getch();
+      switch(tecla){
+
+        case 77:{//derecha
+          if(next==NULL){
+            break;
+          }
+          prev = centro;
+          centro = nextList(barajajugador);
+          next = nextList(barajajugador);
+          if(next != NULL){
+            aux = prevList(barajajugador);  
+          }
           break;
         }
-        prev = centro;
-        centro = nextList(barajajugador);
-        next = nextList(barajajugador);
-        if(next != NULL){
-          aux = prevList(barajajugador);  
-        }
-        break;
-      }
-      
-      case 75:{//izquierda
-        if(prev == NULL){
+        
+        case 75:{//izquierda
+          if(prev == NULL){
+            break;
+          }
+          next = centro;
+          centro = prevList(barajajugador);
+          prev =  prevList(barajajugador);
+          if(prev != NULL){
+            aux = nextList(barajajugador);
+          }
           break;
         }
-        next = centro;
-        centro = prevList(barajajugador);
-        prev =  prevList(barajajugador);
-        if(prev != NULL){
-          aux = nextList(barajajugador);
-        }
-        break;
-      }
-      
-      case 32:{
-        //Hay que hacer lo visual
-      
-        //voy a verificar si coinicide, en caso de no coincidir se devolvería a la seleccion de cartas
-        //Comprobar si puede tirar la carta
-      
-        //comprobar si tiro un mas algo teniendo una suma pendiente
-        if(sumaDeCartas > 0 ){
-          if(centro->carta.codigo == 13 || centro->carta.codigo == 12){
+        
+        case 32:{
+          //Hay que hacer lo visual
+        
+          //voy a verificar si coinicide, en caso de no coincidir se devolvería a la seleccion de cartas
+          //Comprobar si puede tirar la carta
+        
+          //comprobar si tiro un mas algo teniendo una suma pendiente
+          if(sumaDeCartas > 0 ){
+            if(centro->carta.codigo == 13 || centro->carta.codigo == 12){
+              return centro;
+            }
+          }
+        
+          //comprobar si coincide el color
+          if(centro->carta.color == CartaArriba.color && sumaDeCartas == 0){
             return centro;
           }
-        }
-      
-        //comprobar si coincide el color
-        if(centro->carta.color == CartaArriba.color){
-          return centro;
-        }
-      
-        //comprobar si coincide el numero/simbolo
-        if(centro->carta.codigo == CartaArriba.codigo){
-          return centro;
+        
+          //comprobar si coincide el numero/simbolo
+          if(centro->carta.codigo == CartaArriba.codigo && sumaDeCartas == 0){
+            return centro;
+          }
+
+          printf("tira otra carta\n\n");
+          break;
         }
 
-        printf("tira otra carta\n\n");
-        break;
+        case 88:{
+          return NULL;
+        }
+        case 99:{
+          tipoMapa* cartaBool = malloc(sizeof(tipoMapa));
+          cartaBool->carta.clave=999;
+          return cartaBool;
+        }
+        
       }
-
-      case 22:{
-        return NULL;
-      }
-      
     }
+    
+    printf("            \n\n\n==\n  \n==\n\n\n\n");  
+    printf("              \n       ");  
+    
+    
+    if(prev != NULL)printf("  ",prev->carta.clave);
+    else {printf(" ");}
+    
+    if(next!=NULL)printf("         \n   ");  
+    else {printf("        \n   ");  }
+
     //A estas alturas ya tenemos la carta que jugó el jugador
   }
   
@@ -336,13 +354,244 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
 
 
 
+void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int direccion, int sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, tipoJugador *jugadorAct){
+  //Se crea una string estática para dar un nombre al archivo qsue exportará a los jugadores
+  
+  char archivo[100];
+  printf("Escribe el nombre con el que guardarás tu partida:\n");
+  getchar();
+  //scanf("%s",archivo);
+  scanf("%[^\n]s",archivo);
+  getchar();
+  FILE *fp = fopen(archivo, "w");
 
-void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves)
+
+  fprintf(fp, "Datos de partida: contJugadores, Direccion, sumDeCartas, CartaArribaMapa.numero, CartaArribaMapa.codigo, CartaArribaMapa.color, CartaArribaMapa.clave, CartaArribaMapa.cont, CartaAbajo.numero, CartaAbajo.codigo, CartaAbajo.color, CartaAbajo.clave, CartaAbajo.cont, jugadorAct.id\n");
+
+  fprintf(fp, "%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n", *contJugadores, direccion, sumaDeCartas, CartaArribaMapa->carta.numero, CartaArribaMapa->carta.codigo, CartaArribaMapa->carta.color, CartaArribaMapa->carta.clave, CartaArribaMapa->cont, CartaAbajo->carta.numero, CartaAbajo->carta.codigo, CartaAbajo->carta.color, CartaAbajo->carta.clave, CartaAbajo->cont, jugadorAct->id);
+  
+  
+  fprintf(fp, "NombreJugador,ID jugador,Carta 1,numero, codigo, color, clave,Carta 2,Carta 3,Carta 4,Carta 5,Carta 6,Carta 7,Carta ...\n");
+  //Se comienza a recorrer la lista jugaadores para imprimir los datos al archivo que se exportará todo
+  for (tipoJugador *player = firstList(listaJugadores) ; player != NULL ; player = nextList(listaJugadores)){
+    fprintf(fp, "%s,%d,", player->jugador, player->id);
+    
+    //Dentro de la iteración "for", se entra a otra, ya que puede existir el caso de que hayan más de un item
+    for(tipoMapa* carta=firstList(player->cartasJugador) ; carta!=NULL; carta=nextList(player->cartasJugador)){
+      
+      fprintf(fp, "%i,%i,%i,%i,%i,", carta->cont, carta->carta.numero, carta->carta.codigo, carta->carta.color, carta->carta.clave);
+    }
+    fprintf(fp, "\n");
+  }
+  fprintf(fp, "Map: contador,numero, codigo, color, clave\n");
+  
+  void* elemento = firstMap(mapa);
+
+  while (elemento != NULL) {
+      tipoMapa* cartaMapa = (tipoMapa*)elemento;
+      
+       fprintf(fp, "%i,%i,%i,%i,%i,", cartaMapa->cont, cartaMapa->carta.numero, cartaMapa->carta.codigo, cartaMapa->carta.color, cartaMapa->carta.clave);
+       fprintf(fp, "\n");
+    
+      elemento = nextMap(mapa);
+  }
+  
+  
+  //De no haber errores, se muestra el siguiente mensaje por pantalla 
+  printf("===============================================================\n");
+  printf("       Partida guardada con éxito\n");
+  printf("                   ▒▒▒▒▒▒▒▒▒▄▄▄▄▒▄▄▄▒▒▒\n");
+  printf("                   ▒▒▒▒▒▒▄▀▀▓▓▓▀█░░░█▒▒\n");
+  printf("                   ▒▒▒▒▄▀▓▓▄██████▄░█▒▒\n");
+  printf("                   ▒▒▒▄█▄█▀░░▄░▄░█▀▀▄▒▒\n");
+  printf("                   ▒▒▄▀░██▄░░▀░▀░▀▄▓█▒▒\n");
+  printf("                   ▒▒▀▄░░▀░▄█▄▄░░▄█▄▀▒▒\n");
+  printf("                   ▒▒▒▒▀█▄▄░░▀▀▀█▀▓█▒▒▒\n");
+  printf("                   ▒▒▒▄▀▓▓▓▀██▀▀█▄▀▒▒▒▒\n");
+  printf("                   ▒▒█▓▓▄▀▀▀▄█▄▓▓▀█▒▒▒▒\n");
+  printf("                   ▒▒▀▄█░░░░░█▀▀▄▄▀█▒▒▒\n");
+  printf("                   ▒▒▒▄▀▀▄▄▄██▄▄█▀▓▓█▒▒\n");
+  printf("                   ▒▒█▀▓█████████▓▓▓█▒▒\n");
+  printf("                   ▒▒█▓▓██▀▀▀▒▒▒▀▄▄█▀▒▒\n");
+  printf("                   ▒▒▒▀▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n");
+  printf("                           Oki doki!\n");
+  printf("===============================================================\n");
+  fclose(fp);
+  
+}
+
+
+bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int *direccion, int *sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, int *turnoDe){
+  char archivo[100];
+  //Se le pide al usuario que ingrese el nombre del archivo de donde desea importar las tareas
+  printf("Ingresa el nombre de la partida que quieras cargar:\n");
+  //fflush(stdin);
+  scanf("%[^\n]s",archivo);
+  getchar();
+  
+  //Se abre el archivo
+  FILE *fp=fopen(archivo, "r");
+  if(fp==NULL){
+    printf("\n===============================================================\n");
+    printf("                   Error al importar archivo...\n");
+    printf("     Asegúrese de importar al programa con el mismo nombre\n");
+    printf("===============================================================\n\n");
+    return false;
+  }
+  char linea[300];
+  //Se obtiene la primera línea (Que no nos sirve porque son las descripciones de las columnas)
+  fgets(linea,301,fp);
+
+  
+  //A partir de aqui las lineas son importante porque tienen la información que necesitamos
+  while(fgets(linea,301,fp)!=NULL){
+    //Es una tarea por linea, por lo que aquí se crea
+    tipoJugador *player;
+    player=malloc(sizeof(tipoJugador));
+    int j=0;
+    //Se empieza a obtener cada parámetro a través de strtok, asi guardandose en sus variables correspondientes
+    linea[strlen(linea)-1] = 0;
+    char *ch = strtok(linea, ",");
+
+    
+    if(j==0){
+      *contJugadores = atoi(ch);
+
+      ch = strtok(NULL,",");
+      *direccion= atoi(ch);
+
+      ch = strtok(NULL,",");
+      *sumaDeCartas= atoi(ch);
+    
+        
+      tipoMapa* CartaArribaMapa = malloc(sizeof(tipoMapa));
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.numero = atoi(ch);
+        
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.codigo = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.color = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaArribaMapa->carta.clave = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaArribaMapa->cont = atoi(ch);
+
+
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.numero = atoi(ch);
+        
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.codigo = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.color = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaAbajo->carta.clave = atoi(ch);
+
+      ch = strtok(NULL,",");
+      CartaAbajo->cont = atoi(ch);
+
+      ch = strtok(NULL,",");
+      *turnoDe = atoi(ch);
+
+      j++;
+    }
+
+    if(j==1){
+      fgets(linea,301,fp);
+      fgets(linea,301,fp);     
+    }
+    linea[strlen(linea)-1] = 0;
+    if(j<=*contJugadores){
+      tipoMapa *carta = malloc(sizeof(tipoMapa));
+      ch = strtok(linea,",");
+      strcpy(player->jugador,ch);        
+
+      ch = strtok(NULL,",");
+      player->id = atoi(ch);
+
+      player->cartasJugador=createList();
+    
+      ch = strtok(NULL,",");
+
+      while(ch != NULL){
+
+      tipoMapa* carta = malloc(sizeof(tipoCarta));
+      carta->cont = atoi(ch);   
+
+      
+      ch = strtok(NULL,",");
+      carta->carta.numero = atoi(ch);   
+      
+      ch = strtok(NULL,",");
+      carta->carta.codigo =atoi(ch);   
+      
+      ch = strtok(NULL,",");
+      carta->carta.color = atoi(ch);   
+        
+      ch = strtok(NULL,",");
+      carta->carta.clave = atoi(ch);
+      
+      pushBack(player->cartasJugador, carta);
+      
+      ch = strtok(NULL,",");
+      }
+      j++;
+    }
+    
+    if(j==*contJugadores){
+      fgets(linea,301,fp);
+      j++;
+    }
+
+    if(j>*contJugadores){
+      tipoMapa *carta = malloc(sizeof(tipoMapa));
+    
+      ch = strtok(NULL,",");
+      carta->cont = atoi(ch);   
+  
+  
+      ch = strtok(NULL,",");
+      carta->carta.numero = atoi(ch);   
+        
+      ch = strtok(NULL,",");
+      carta->carta.codigo =atoi(ch);   
+        
+      ch = strtok(NULL,",");
+      carta->carta.color = atoi(ch);   
+          
+      ch = strtok(NULL,",");
+      carta->carta.clave = atoi(ch);
+        
+      int *clave = malloc(sizeof(int));
+        *clave = carta->carta.clave;
+      insertMap(mapa, clave, carta);
+    }
+    
+  }
+  
+  
+  printf("\n===============================================================\n");
+  printf("        La importación de tareas fue hecha con éxito\n");
+  printf("===============================================================\n\n");
+  fclose(fp);
+
+  return true;
+}
+
+
+void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves,bool cargar)
 {
   //Si la dirección es hacia la derecha, que será al principio, valdrá 0, si es al otro lado, valdrá 1.
   int direccion = 0;
   int sumaDeCartas = 0;
   int color = 0;
+  int turnoDe = 0;
   tipoMapa *CartaArribaMapa = repartir(mapa, vectorClaves);
   tipoCarta CartaArriba = CartaArribaMapa->carta;
   tipoMapa *CartaAbajo = malloc(sizeof(tipoCarta));
@@ -350,14 +599,28 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
   tipoJugador *jugadorAct = firstList(listaJugadores);
 
   color=CartaArriba.color;
+  
+  if(cargar==true){
+   if(cargarDatos(listaJugadores, mapa, contJugadores, vectorClaves, &direccion, &sumaDeCartas, CartaArribaMapa, CartaAbajo, &turnoDe) == false) return;
+    //hay que vincular turnoDe con el jugador actual
+    
+  }
 
+  
+  
   //int vueltas = 30;
   while(true){//(true)
     //mostrarListasJugadores(listaJugadores);
+    printf("\n\n\n==============================\n     TURNO DE: %s \n==============================\n\n\n", jugadorAct->jugador);
     tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas); //aspecto: se muestran las cartas del jugador y la cartaArriba
     //Retornará la carta jugada, en caso de que el jugador no tenga una carta para jugar o
     //salte su turno, se retornará NULL.
     //tipoMapa *cartaJugada = firstList(jugadorAct->cartasJugador);
+
+    if(cartaJugada->carta.clave == 999){
+      exportarDatos(listaJugadores, mapa, contJugadores, vectorClaves, direccion, sumaDeCartas, CartaArribaMapa, CartaAbajo,  jugadorAct);
+      return;
+    }
     
     if(cartaJugada == NULL && sumaDeCartas == 0){
       pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
@@ -378,10 +641,6 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
       if(cartaJugada->carta.codigo==13){
         sumaDeCartas=sumaDeCartas+4;
       }
-      if(cartaJugada->carta.codigo==11){
-        if(direccion==0) direccion=1;
-        if(direccion==1) direccion=0;
-      }
       
       //vueltas--;
       
@@ -393,6 +652,25 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
           cartaNode = nextList(jugadorAct->cartasJugador);
       }
       popCurrent(jugadorAct->cartasJugador);
+
+      if(cartaJugada->carta.codigo==11){
+        if(direccion==0) direccion=1;
+        if(direccion==1) direccion=0;
+        if(*contJugadores == 2){
+          if(direccion==0){
+            jugadorAct = nextList(listaJugadores);
+            if(jugadorAct == NULL){
+              jugadorAct = firstList(listaJugadores);
+            }
+          }
+          else{
+            jugadorAct = prevList(listaJugadores);
+            if(jugadorAct == NULL){
+              jugadorAct = lastList(listaJugadores);
+            }
+          }
+        }
+      }
       
       if(cartaJugada->carta.codigo==10){
         if(direccion==0){
@@ -434,7 +712,7 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
 void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves){
   //mostrarMapa(mapa);
   crearBaraja(listaJugadores,mapa, contJugadores, vectorClaves);
-  theGame(listaJugadores,mapa, contJugadores, vectorClaves);
+  theGame(listaJugadores,mapa, contJugadores, vectorClaves,false);
   
   return;
 }
@@ -460,12 +738,11 @@ Funciones:
 void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
   int opcion = 1;
   while(opcion != 0){
-    printf("\033[0;37m");
 
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║  Ingrese una cantidad de jugadores entre 2 y 4              ║\n");
-    printf("║  Presione 0 para volver al menu inicial                     ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
+    printf(" _____________________________________________________________\n");
+    printf("|  Ingrese una cantidad de jugadores entre 2 y 4              |\n");
+    printf("|  Presione 0 para volver al menu inicial                     |\n");
+    printf("|_____________________________________________________________|\n\n");
     
     scanf("%d", contJugadores);
     opcion=(*contJugadores);
@@ -475,28 +752,72 @@ void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *ve
   }
 }
 
+/*
+void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves, int direccion, int sumaDeCartas, tipoMapa *CartaArribaMapa, tipoMapa *CartaAbajo, tipoJugador *jugadorAct){
+  //Se crea una string estática para dar un nombre al archivo qsue exportará a los jugadores
+
+
+  fprintf(fp, "Datos de partida: contJugadores, Direccion, sumDeCartas, CartaArribaMapa.numero, CartaArribaMapa.codigo, CartaArribaMapa.color, CartaArribaMapa.clave, CartaArribaMapa.cont, CartaAbajo.numero, CartaAbajo.codigo, CartaAbajo.color, CartaAbajo.clave, CartaAbajo.cont, jugadorAct.id\n");
+
+  fprintf(fp, "%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i",contJugadores, direccion, sumaDeCartas, CartaArribaMapa->carta.numero, CartaArribaMapa->carta.codigo, CartaArribaMapa->carta.color, CartaArribaMapa->carta.clave, CartaArribaMapa->cont, CartaAbajo->carta.numero, CartaAbajo->carta.codigo, CartaAbajo->carta.color, CartaAbajo->carta.clave, CartaAbajo->cont, jugadorAct->id);
+
+  
+  fprintf(fp, "NombreJugador,ID jugador,Carta 1,cont, numero, codigo, color, clave,Carta 2,Carta 3,Carta 4,Carta 5,Carta 6,Carta 7,Carta ...\n");
+  //Se comienza a recorrer la lista jugaadores para imprimir los datos al archivo que se exportará todo
+  for (tipoJugador *player = firstList(listaJugadores) ; player != NULL ; player = nextList(listaJugadores)){
+    fprintf(fp, "%s,%d,", player->jugador, player->id);
+    
+    //Dentro de la iteración "for", se entra a otra, ya que puede existir el caso de que hayan más de un item
+    for(tipoMapa* carta=firstList(player->cartasJugador) ; carta!=NULL; carta=nextList(player->cartasJugador)){
+      
+      fprintf(fp, "%i,%i,%i,%i,%i, ", carta->cont, carta->carta.numero, carta->carta.codigo, carta->carta.color, carta->carta.clave);
+    }
+    fprintf(fp, "\n");
+  }
+  fprintf(fp, "Map: contador,numero, codigo, color, clave\n");
+  
+  void* elemento = firstMap(mapa);
+
+  while (elemento != NULL) {
+      tipoMapa* cartaMapa = (tipoMapa*)elemento;
+      
+       fprintf(fp, "%i,%i,%i,%i,%i,", cartaMapa->cont, cartaMapa->carta.numero, cartaMapa->carta.codigo, cartaMapa->carta.color, cartaMapa->carta.clave);
+       fprintf(fp, "\n");
+    
+      elemento = nextMap(mapa);
+  }
+
+}
+*/
+
+
+
 void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves){
   //Se crea una variable "opcion" la cual será una condicionante para el ciclo "while" base de nuestro programa
   int opcion = 1;
   while(opcion != 0){
-printf("\033[0;31m");
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║                  DEFINITIVAMENTE UNON'T :D                 ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║  Presione 1 para iniciar partida                            ║\n");
-    printf("║  Presione 0 para salir del juego                            ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
+    printf(" _____________________________________________________________\n");
+    printf("|                  DEFINITIVAMENTE UNON'T :D                  |\n");
+    printf("|_____________________________________________________________|\n\n");
+    printf(" ______________________________________________________________\n");
+    printf("|  Presione 1 para iniciar partida                            |\n");
+    printf("|  Presione 2 para cargar partida                             |\n");
+    printf("|  Presione 0 para salir del juego                            |\n");
+    printf("|_____________________________________________________________|\n\n");
     //Se cambia el valor de la variable "opcion" con un valor que desee el usuario realizar
     scanf("%d", &opcion);
     getchar();
     //Se utiliza un switch para acceder a las opciones de cada función
     switch(opcion){
-      case 2: mostrarListasJugadores(listaJugadores);
+      case 3: mostrarListasJugadores(listaJugadores);
       break;
       case 1: IniciarPartida(listaJugadores,mapa, contJugadores,vectorClaves);
       break; 
-
+      case 2:{
+        bool cargar = true;
+        theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);
+      } 
+      
       //en caso de ser cero se imprime lo sgte. Para finalizar el programa
       case 0:
         printf("         by GG WP//");
@@ -515,5 +836,7 @@ int main(void) {
   
   menu(listaJugadores, mapa, &contJugadores,vectorClaves);
   free(vectorClaves);
+  free(listaJugadores);
+  free(mapa);
   return 0;
 }

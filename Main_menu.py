@@ -2,6 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 from PIL import Image
 import os
+import csv
 
 #-----archivos-------
 #carpeta principal
@@ -10,12 +11,11 @@ Carpeta_principal = os.path.dirname(__file__)
 Carpeta_Imagenes = os.path.join(Carpeta_principal, "imagenes")
 
 #------------------customtk----------------
-ctk.set_appearance_mode("system")
-ctk.set_default_color_theme("green")
-
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")
 #------------fuente----------
 
-
+#fuente_witgets = ('', 16)
 
 class Inicio:
     def __init__(self):
@@ -47,10 +47,10 @@ class Inicio:
         botonOut = ctk.CTkButton(master=self.root, text = "Salir de UNON'T", command= antes_de_salir)
         botonOut.place(relx=0.8, rely=0.9, anchor=tk.CENTER)
 
-        logo= ctk.CTkImage(Image.open(os.path.join(Carpeta_Imagenes, "Unon't_Logo.png")), size= (250, 250))
+        logo= ctk.CTkImage(Image.open(os.path.join(Carpeta_Imagenes, "Unon't_Logo.png")), size= (350, 350))
         etiqueta = ctk.CTkLabel(master=self.root, image=logo, text=" ")
 
-        etiqueta.pack(pady=15)
+        etiqueta.pack(pady=5)
 
         ctk.CTkButton(self.root, text="Iniciar partida", command=ir_a_prejuego).pack(pady=10)
         ctk.CTkButton(self.root, text="Opciones").pack(pady=10)
@@ -61,50 +61,88 @@ class Inicio:
 class funciones:
     
     def ventana_jugadores_2(self):
-        jugadores = 2
         ventana = ctk.CTkToplevel()
         ventana.title("Ventana de jugadores")
+        ventana.geometry("200x200")
+        ventana.resizable(False, False)
+
+        ctk.CTkLabel(ventana, text="Nombre de jugador", anchor="center").pack()
+        self.entrada = ctk.CTkEntry(ventana)
+        self.entrada.insert(0, "EJ: Pepe360")
+        self.entrada.bind("<Button-1>", lambda e: self.entrada.delete(0, 'end'))
+        self.entrada.pack()
+
+        jugadores = []  # Declarar la lista fuera de la función entry_process()
+
+        def entry_process():
+            jugador = self.entrada.get()
+            jugadores.append(jugador)
+            if len(jugadores) == 2:
+                with open("jugadores.txt", "a") as file:
+                    for nombre in jugadores:
+                        file.write(nombre + "\n")
+                ventana.destroy()
+            self.entrada.insert(0, " ")
+
+
+
+        ctk.CTkButton(ventana, command=entry_process, text="ingresar", anchor="center").pack(pady=10)
+
+
+
+
+
 
     def ventana_jugadores_3(self):
-        jugadores = 3
         ventana = ctk.CTkToplevel()
         ventana.title("Ventana de jugadores")
+        ventana.geometry("200x200")
+        ventana.resizable(False, False)
+
+        ctk.CTkLabel(ventana, text="Nombre de jugador", anchor="center").pack()
+
+
+
 
     def ventana_jugadores_4(self):
-        jugadores = 4
+
         ventana = ctk.CTkToplevel()
         ventana.title("Ventana de jugadores")
+        ventana.geometry("200x200")
+        ventana.resizable(False, False)
+
+        ctk.CTkLabel(ventana, text="Nombre de jugador", anchor="center").pack()
+
+
+
 
     
-    def salir(self):
-        self.root.destroy()
-
-
-    def backtoMainMenu(self):
-        self.root.destroy()
-        Ventana_inicio = Inicio()
 
 
 objeto_func = funciones()
 
 
-        
-
 #-------nueva ventana-------
 class opciones_pre_juego:
-    botones = {'2 jugadores': objeto_func.ventana_jugadores_2, '3 jugadores': objeto_func.ventana_jugadores_3, '4 jugadores': objeto_func.ventana_jugadores_4, 'volver al menu': objeto_func.backtoMainMenu,'salir del juego': objeto_func.salir}
+
     def __init__(self):
         #---------------------------self-------------------------
         self.root = ctk.CTk()
         self.root.title("Sala de jugadores.")
+        self.root.geometry("600x600")
 
-        cont = 0
+        def salir():
+            self.root.destroy()
+            win = Inicio()
 
-        for texto_boton in self.botones:
-            button = ctk.CTkButton(master=self.root, text= texto_boton, height=50, width=200, command= self.botones[texto_boton], anchor=tk.CENTER)
+        botonback = ctk.CTkButton(master=self.root, text = "Volver", command= salir)
+        botonback.place(relx=0.8, rely=0.9, anchor=tk.CENTER)
 
-            button.grid(row=cont//1, column=cont%1, padx=5, pady=5)   
-            cont += 1
-            
+        ctk.CTkButton(self.root, text="2 jugadores", command=objeto_func.ventana_jugadores_2, width=200, height=100).pack(pady=10)
+        ctk.CTkButton(self.root, text="3 jugadores", command=objeto_func.ventana_jugadores_3, width=200, height=100).pack(pady=10)
+        ctk.CTkButton(self.root, text="4 jugadores", command=objeto_func.ventana_jugadores_4, width=200, height=100).pack(pady=10)
+
+
+
 
         self.root.mainloop() 
