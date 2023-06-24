@@ -11,8 +11,8 @@ Carpeta_principal = os.path.dirname(__file__)
 Carpeta_Imagenes = os.path.join(Carpeta_principal, "imagenes")
 
 #------------------customtk----------------
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("dark-blue")
+ctk.set_appearance_mode("system")
+ctk.set_default_color_theme("blue")
 #------------fuente----------
 
 #fuente_witgets = ('', 16)
@@ -53,7 +53,7 @@ class Inicio:
         etiqueta.pack(pady=5)
 
         ctk.CTkButton(self.root, text="Iniciar partida", command=ir_a_prejuego).pack(pady=10)
-        ctk.CTkButton(self.root, text="Opciones").pack(pady=10)
+        #ctk.CTkButton(self.root, text="Opciones").pack(pady=10)
 
 
         self.root.mainloop()
@@ -77,16 +77,22 @@ class funciones:
         def entry_process():
             jugador = self.entrada.get()
             jugadores.append(jugador)
+            cant_players = len(jugadores)
+            self.cont_players.configure(text=f"jugadores registrados: {cant_players}")
             if len(jugadores) == 2:
                 with open("jugadores.txt", "a") as file:
                     for nombre in jugadores:
                         file.write(nombre + "\n")
                 ventana.destroy()
-            self.entrada.insert(0, " ")
+            self.entrada.delete(0, "end")
+
 
 
 
         ctk.CTkButton(ventana, command=entry_process, text="ingresar", anchor="center").pack(pady=10)
+
+        self.cont_players = ctk.CTkLabel(ventana, text="jugadores registrados: 0")
+        self.cont_players.pack()
 
 
 
@@ -100,6 +106,32 @@ class funciones:
         ventana.resizable(False, False)
 
         ctk.CTkLabel(ventana, text="Nombre de jugador", anchor="center").pack()
+        self.entrada = ctk.CTkEntry(ventana)
+        self.entrada.insert(0, "EJ: Pepe360")
+        self.entrada.bind("<Button-1>", lambda e: self.entrada.delete(0, 'end'))
+        self.entrada.pack()
+
+        jugadores = []  # Declarar la lista fuera de la función entry_process()
+
+        def entry_process():
+            jugador = self.entrada.get()
+            jugadores.append(jugador)
+            cant_players = len(jugadores)
+            self.cont_players.configure(text=f"jugadores registrados: {cant_players}")            
+            if len(jugadores) == 3:
+                with open("jugadores.txt", "a") as file:
+                    for nombre in jugadores:
+                        file.write(nombre + "\n")
+                ventana.destroy()
+            self.entrada.delete(0, "end")
+
+
+
+
+        ctk.CTkButton(ventana, command=entry_process, text="ingresar", anchor="center").pack(pady=10)
+
+        self.cont_players = ctk.CTkLabel(ventana, text="jugadores registrados: 0")
+        self.cont_players.pack()
 
 
 
@@ -112,6 +144,32 @@ class funciones:
         ventana.resizable(False, False)
 
         ctk.CTkLabel(ventana, text="Nombre de jugador", anchor="center").pack()
+        self.entrada = ctk.CTkEntry(ventana)
+        self.entrada.insert(0, "EJ: Pepe360")
+        self.entrada.bind("<Button-1>", lambda e: self.entrada.delete(0, 'end'))
+        self.entrada.pack()
+
+        jugadores = []  # Declarar la lista fuera de la función entry_process()
+
+        def entry_process():
+            jugador = self.entrada.get()
+            jugadores.append(jugador)
+            cant_players = len(jugadores)
+            self.cont_players.configure(text=f"jugadores registrados: {cant_players}")            
+            if len(jugadores) == 4:
+                with open("jugadores.txt", "a") as file:
+                    for nombre in jugadores:
+                        file.write(nombre + "\n")
+                ventana.destroy()
+            self.entrada.delete(0, "end")
+
+
+        ctk.CTkButton(ventana, command=entry_process, text="ingresar", anchor="center").pack(pady=10)
+
+        self.cont_players = ctk.CTkLabel(ventana, text="jugadores registrados: 0")
+        self.cont_players.pack()
+
+
 
 
 

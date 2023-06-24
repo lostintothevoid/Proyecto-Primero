@@ -254,21 +254,21 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   int tecla;
   while(true){
     //El pato ve los prints
-
-    printf("          \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
-    printf("            %i\n       ", centro->carta.clave);  
-    
-    
-    if(prev != NULL)printf("%i",prev->carta.clave);
-    else {printf("X");}
-    
-    if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
-    else {printf("       X\n   ");  }
     //if(verificarPrev != NULL)printf("%s",vacio);
     //if(verificarNext != NULL)printf("               %s\n", vacio);
 
     if (kbhit())
     {
+      printf("            \n\n\n==\n  \n==\n\n\n\n");  
+      printf("              \n       ");  
+      
+      
+      if(prev != NULL)printf("  ",prev->carta.clave);
+      else {printf(" ");}
+      
+      if(next!=NULL)printf("         \n   ");  
+      else {printf("        \n   ");  }
+
       tecla = getch();
       switch(tecla){
 
@@ -325,29 +325,29 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
           break;
         }
 
-        case 88:{
+        case 120:{
           return NULL;
         }
-        case 99:{
+        case 122:{
           tipoMapa* cartaBool = malloc(sizeof(tipoMapa));
           cartaBool->carta.clave=999;
           return cartaBool;
         }
         
       }
-    }
-    
-    printf("            \n\n\n==\n  \n==\n\n\n\n");  
-    printf("              \n       ");  
-    
-    
-    if(prev != NULL)printf("  ",prev->carta.clave);
-    else {printf(" ");}
-    
-    if(next!=NULL)printf("         \n   ");  
-    else {printf("        \n   ");  }
+      printf("          \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
+      printf("            %i\n       ", centro->carta.clave);  
+      
+      
+      if(prev != NULL)printf("%i",prev->carta.clave);
+      else {printf("X");}
+      
+      if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
+      else {printf("       X\n   ");  }
 
-    //A estas alturas ya tenemos la carta que jugó el jugador
+    }
+
+    //A estas alturas ya tenemos la carta que jugó el jugado
   }
   
 }
