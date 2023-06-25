@@ -7,7 +7,7 @@
 #include "Stack.h"
 #include <time.h>
 #include <conio.h>
-#include <math.h>
+
 
 //Estructuras
 typedef struct{
@@ -237,7 +237,7 @@ tipoMapa *puntocentral(List *barajajugador){
   return aux;
 }
 
-tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas){ 
+tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color){ 
   
   tipoMapa *centro = puntocentral(barajajugador);
   tipoMapa *next = nextList(barajajugador);
@@ -254,24 +254,25 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   int tecla;
   while(true){
     //El pato ve los prints
+
+    printf("            \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
+    printf("            %i\n       ", centro->carta.clave);  
+    
+    
+    if(prev != NULL)printf("%i",prev->carta.clave);
+    else {printf("X");}
+    
+    if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
+    else {printf("       X\n   ");  }
     //if(verificarPrev != NULL)printf("%s",vacio);
     //if(verificarNext != NULL)printf("               %s\n", vacio);
 
-    if (kbhit())
-    {
-      printf("            \n\n\n==\n  \n==\n\n\n\n");  
-      printf("              \n       ");  
-      
-      
-      if(prev != NULL)printf("  ",prev->carta.clave);
-      else {printf(" ");}
-      
-      if(next!=NULL)printf("         \n   ");  
-      else {printf("        \n   ");  }
+    
+    if(kbhit()){
 
-      tecla = getch();
+      tecla = kbhit();
       switch(tecla){
-
+    
         case 77:{//derecha
           if(next==NULL){
             break;
@@ -321,33 +322,40 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
             return centro;
           }
 
+          if(sumaDeCartas==0 && centro->carta.codigo==14){
+            printf("¿A que color quieres cambiar?\n");
+            printf("1. Rojo\n");
+            printf("2. Azul\n");
+            printf("3. Verde\n");
+            printf("4. Amarillo\n");
+            int opcion;
+            scanf("%d", &opcion);
+            switch(opcion){
+              case 1: *color=100;
+
+              case 2: *color=200;
+
+              case 3: *color=300;
+
+              case 4: *color=400;
+            }
+          }
+          
           printf("tira otra carta\n\n");
           break;
         }
 
-        case 120:{
+        case 122:{
           return NULL;
         }
-        case 122:{
+        case 120:{
           tipoMapa* cartaBool = malloc(sizeof(tipoMapa));
           cartaBool->carta.clave=999;
           return cartaBool;
         }
-        
       }
-      printf("          \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
-      printf("            %i\n       ", centro->carta.clave);  
-      
-      
-      if(prev != NULL)printf("%i",prev->carta.clave);
-      else {printf("X");}
-      
-      if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
-      else {printf("       X\n   ");  }
-
     }
-
-    //A estas alturas ya tenemos la carta que jugó el jugado
+    //A estas alturas ya tenemos la carta que jugó el jugador
   }
   
 }
@@ -442,19 +450,19 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   //Se obtiene la primera línea (Que no nos sirve porque son las descripciones de las columnas)
   fgets(linea,301,fp);
 
-  
+  int j=0;
   //A partir de aqui las lineas son importante porque tienen la información que necesitamos
   while(fgets(linea,301,fp)!=NULL){
     //Es una tarea por linea, por lo que aquí se crea
     tipoJugador *player;
     player=malloc(sizeof(tipoJugador));
-    int j=0;
     //Se empieza a obtener cada parámetro a través de strtok, asi guardandose en sus variables correspondientes
     linea[strlen(linea)-1] = 0;
+    
     char *ch = strtok(linea, ",");
-
     
     if(j==0){
+      
       *contJugadores = atoi(ch);
 
       ch = strtok(NULL,",");
@@ -463,8 +471,6 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
       ch = strtok(NULL,",");
       *sumaDeCartas= atoi(ch);
     
-        
-      tipoMapa* CartaArribaMapa = malloc(sizeof(tipoMapa));
       ch = strtok(NULL,",");
       CartaArribaMapa->carta.numero = atoi(ch);
         
@@ -479,7 +485,6 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
 
       ch = strtok(NULL,",");
       CartaArribaMapa->cont = atoi(ch);
-
 
       ch = strtok(NULL,",");
       CartaAbajo->carta.numero = atoi(ch);
@@ -498,18 +503,20 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
 
       ch = strtok(NULL,",");
       *turnoDe = atoi(ch);
-
       j++;
     }
 
     if(j==1){
       fgets(linea,301,fp);
-      fgets(linea,301,fp);     
+      fgets(linea,301,fp);  
+      linea[strlen(linea)-1] = 0;
     }
-    linea[strlen(linea)-1] = 0;
+  
     if(j<=*contJugadores){
       tipoMapa *carta = malloc(sizeof(tipoMapa));
-      ch = strtok(linea,",");
+      if(j<2){
+        ch = strtok(linea,",");  
+      }
       strcpy(player->jugador,ch);        
 
       ch = strtok(NULL,",");
@@ -524,7 +531,6 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
       tipoMapa* carta = malloc(sizeof(tipoCarta));
       carta->cont = atoi(ch);   
 
-      
       ch = strtok(NULL,",");
       carta->carta.numero = atoi(ch);   
       
@@ -541,18 +547,18 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
       
       ch = strtok(NULL,",");
       }
-      j++;
+      pushBack(listaJugadores, player);
     }
     
     if(j==*contJugadores){
       fgets(linea,301,fp);
-      j++;
+      linea[strlen(linea)-1] = 0;
     }
 
     if(j>*contJugadores){
       tipoMapa *carta = malloc(sizeof(tipoMapa));
     
-      ch = strtok(NULL,",");
+      //ch = strtok(NULL,",");
       carta->cont = atoi(ch);   
   
   
@@ -572,7 +578,7 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
         *clave = carta->carta.clave;
       insertMap(mapa, clave, carta);
     }
-    
+    j++;
   }
   
   
@@ -592,35 +598,40 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
   int sumaDeCartas = 0;
   int color = 0;
   int turnoDe = 0;
-  tipoMapa *CartaArribaMapa = repartir(mapa, vectorClaves);
+  tipoMapa *CartaArribaMapa = malloc(sizeof(tipoMapa));
+  if(cargar==false){
+    CartaArribaMapa = repartir(mapa, vectorClaves);
+    while(CartaArribaMapa->carta.codigo==13 || CartaArribaMapa->carta.codigo==14){
+      CartaArribaMapa = repartir(mapa, vectorClaves);
+    }
+  }
   tipoCarta CartaArriba = CartaArribaMapa->carta;
   tipoMapa *CartaAbajo = malloc(sizeof(tipoCarta));
-  
+   
   tipoJugador *jugadorAct = firstList(listaJugadores);
-
-  color=CartaArriba.color;
+   
+  
   
   if(cargar==true){
    if(cargarDatos(listaJugadores, mapa, contJugadores, vectorClaves, &direccion, &sumaDeCartas, CartaArribaMapa, CartaAbajo, &turnoDe) == false) return;
     //hay que vincular turnoDe con el jugador actual
-    
+    for(jugadorAct=firstList(listaJugadores); jugadorAct!=NULL ; jugadorAct=nextList(listaJugadores)){
+      if(turnoDe==jugadorAct->id) break;
+    }
   }
-
-  
+  //mostrarListasJugadores(listaJugadores);
+  if(CartaArriba.codigo!=13 && CartaArriba.codigo){
+    color=CartaArriba.color;  
+  }
   
   //int vueltas = 30;
   while(true){//(true)
     //mostrarListasJugadores(listaJugadores);
     printf("\n\n\n==============================\n     TURNO DE: %s \n==============================\n\n\n", jugadorAct->jugador);
-    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas); //aspecto: se muestran las cartas del jugador y la cartaArriba
+    tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas, &color); //aspecto: se muestran las cartas del jugador y la cartaArriba
     //Retornará la carta jugada, en caso de que el jugador no tenga una carta para jugar o
     //salte su turno, se retornará NULL.
     //tipoMapa *cartaJugada = firstList(jugadorAct->cartasJugador);
-
-    if(cartaJugada->carta.clave == 999){
-      exportarDatos(listaJugadores, mapa, contJugadores, vectorClaves, direccion, sumaDeCartas, CartaArribaMapa, CartaAbajo,  jugadorAct);
-      return;
-    }
     
     if(cartaJugada == NULL && sumaDeCartas == 0){
       pushFront(jugadorAct->cartasJugador, repartir(mapa, vectorClaves));
@@ -634,6 +645,11 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
     }
 
     if(cartaJugada != NULL){
+
+      if(cartaJugada->carta.clave == 999){
+        exportarDatos(listaJugadores, mapa, contJugadores, vectorClaves, direccion, sumaDeCartas, CartaArribaMapa, CartaAbajo,  jugadorAct);
+        return;
+      }
       
       if(cartaJugada->carta.codigo==12){
         sumaDeCartas=sumaDeCartas+2;
@@ -641,7 +657,9 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
       if(cartaJugada->carta.codigo==13){
         sumaDeCartas=sumaDeCartas+4;
       }
-      
+      if(CartaArriba.codigo!=13 && CartaArriba.codigo){
+        color=CartaArriba.color;  
+      }
       //vueltas--;
       
       CartaAbajo = CartaArribaMapa;
@@ -707,6 +725,7 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
       }
     }  
   }
+  
 }
 
 void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves){
@@ -738,11 +757,12 @@ Funciones:
 void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
   int opcion = 1;
   while(opcion != 0){
+    printf("\033[0;37m");
 
-    printf(" _____________________________________________________________\n");
-    printf("|  Ingrese una cantidad de jugadores entre 2 y 4              |\n");
-    printf("|  Presione 0 para volver al menu inicial                     |\n");
-    printf("|_____________________________________________________________|\n\n");
+    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
+    printf("║  Ingrese una cantidad de jugadores entre 2 y 4              ║\n");
+    printf("║  Presione 0 para volver al menu inicial                     ║\n");
+    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
     
     scanf("%d", contJugadores);
     opcion=(*contJugadores);
@@ -796,28 +816,28 @@ void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves)
   //Se crea una variable "opcion" la cual será una condicionante para el ciclo "while" base de nuestro programa
   int opcion = 1;
   while(opcion != 0){
-    printf(" _____________________________________________________________\n");
-    printf("|                  DEFINITIVAMENTE UNON'T :D                  |\n");
-    printf("|_____________________________________________________________|\n\n");
-    printf(" ______________________________________________________________\n");
-    printf("|  Presione 1 para iniciar partida                            |\n");
-    printf("|  Presione 2 para cargar partida                             |\n");
-    printf("|  Presione 0 para salir del juego                            |\n");
-    printf("|_____________________________________________________________|\n\n");
+printf("\033[0;31m");
+    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
+    printf("║                  DEFINITIVAMENTE UNON'T :D                 ║\n");
+    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
+    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
+    printf("║  Presione 1 para iniciar partida                            ║\n");
+    printf("║  Presione 2 para cargar partida                             ║\n");
+    printf("║  Presione 0 para salir del juego                            ║\n");
+    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
     //Se cambia el valor de la variable "opcion" con un valor que desee el usuario realizar
     scanf("%d", &opcion);
     getchar();
     //Se utiliza un switch para acceder a las opciones de cada función
     switch(opcion){
-      case 3: mostrarListasJugadores(listaJugadores);
-      break;
       case 1: IniciarPartida(listaJugadores,mapa, contJugadores,vectorClaves);
       break; 
       case 2:{
         bool cargar = true;
         theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);
       } 
-      
+      case 3: mostrarListasJugadores(listaJugadores);
+      break;
       //en caso de ser cero se imprime lo sgte. Para finalizar el programa
       case 0:
         printf("         by GG WP//");

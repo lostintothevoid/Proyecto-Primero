@@ -2,7 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 from PIL import Image
 import os
-import csv
+
 
 #-----archivos-------
 #carpeta principal
@@ -79,7 +79,7 @@ class funciones:
             cant_players = len(jugadores)
             self.cont_players.configure(text=f"jugadores registrados: {cant_players}")
             if len(jugadores) == 2:
-                with open("jugadores.txt", "a") as file:
+                with open("jugadores.csv", "a") as file:
                     for nombre in jugadores:
                         file.write(nombre + "\n")
                 ventana.destroy()
@@ -110,7 +110,7 @@ class funciones:
             cant_players = len(jugadores)
             self.cont_players.configure(text=f"jugadores registrados: {cant_players}")            
             if len(jugadores) == 3:
-                with open("jugadores.txt", "a") as file:
+                with open("jugadores.csv", "a") as file:
                     for nombre in jugadores:
                         file.write(nombre + "\n")
                 ventana.destroy()
@@ -142,7 +142,7 @@ class funciones:
             cant_players = len(jugadores)
             self.cont_players.configure(text=f"jugadores registrados: {cant_players}")            
             if len(jugadores) == 4:
-                with open("jugadores.txt", "a") as file:
+                with open("jugadores.csv", "a") as file:
                     for nombre in jugadores:
                         file.write(nombre + "\n")
                 ventana.destroy()
