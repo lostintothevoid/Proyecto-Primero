@@ -7,6 +7,9 @@
 #include "Stack.h"
 #include <time.h>
 #include <conio.h>
+#include <math.h>
+#include "gotoxy.h"
+#include <stdbool.h>
 
 
 //Estructuras
@@ -157,7 +160,6 @@ tipoMapa *repartir(Map *mapa, int *vectorClaves){
   */
   //Generar numero aleatorio, usa la libreria time para obtener algo de una semilla basada en el tiempo actual
   //srand(time(NULL));
-   printf("entro a repartir\n");
   //int numeroAleatorio = rand() % 53;
   int numeroAleatorio = rand() % 54;
 //error en trabajo de punteros
@@ -191,11 +193,12 @@ void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   jugador*/
   
   for(int i = 1 ; i <= *contJugadores ; i++) {
+    
     //creo la listaJugadores de cartas del jugador i 
     tipoJugador *jugador=malloc(sizeof(tipoJugador));
     jugador->id=i;
     jugador->cartasJugador = createList();
-    printf("ingrese el nickname del jugador: ");
+    gotoxy(15,8);printf("ingrese el nickname del jugador%i: ", i);
     scanf("%[^\n]s", jugador->jugador);
     getchar();
     //se reparten las cartas al la lista de cartas del jugador
@@ -204,6 +207,7 @@ void crearBaraja(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
     }
     //se ingresa el jugador con su baraja creada en la lista de jugadores
     pushFront(listaJugadores, jugador);
+    system("cls");
   } 
 }
 /*
@@ -237,8 +241,8 @@ tipoMapa *puntocentral(List *barajajugador){
   return aux;
 }
 
-tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color){ 
-  
+tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCartas, int *color){
+
   tipoMapa *centro = puntocentral(barajajugador);
   tipoMapa *next = nextList(barajajugador);
   tipoMapa *verificarNext = nextList(barajajugador);
@@ -254,23 +258,11 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
   int tecla;
   while(true){
     //El pato ve los prints
-
-    printf("            \n\n\n==\n%i\n==\n\n\n\n", CartaArriba.clave);  
-    printf("            %i\n       ", centro->carta.clave);  
-    
-    
-    if(prev != NULL)printf("%i",prev->carta.clave);
-    else {printf("X");}
-    
-    if(next!=NULL)printf("       %i\n   ", next->carta.clave);  
-    else {printf("       X\n   ");  }
-    //if(verificarPrev != NULL)printf("%s",vacio);
-    //if(verificarNext != NULL)printf("               %s\n", vacio);
-
     
     if(kbhit()){
+      gotoxy(30,50);tecla = getch();
+      system("cls");
 
-      tecla = kbhit();
       switch(tecla){
     
         case 77:{//derecha
@@ -339,9 +331,10 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
 
               case 4: *color=400;
             }
+            
           }
           
-          printf("tira otra carta\n\n");
+          gotoxy(30,4);printf("tira otra carta\n\n");
           break;
         }
 
@@ -354,6 +347,28 @@ tipoMapa *turnojugador(List *barajajugador, tipoCarta CartaArriba, int sumaDeCar
           return cartaBool;
         }
       }
+
+      gotoxy(37,10);printf("===\n");
+      gotoxy(37,11);printf("%i\n", CartaArriba.clave); 
+      gotoxy(37,12);printf("===\n");   
+      gotoxy(29,20);printf("            %i\n       ", centro->carta.clave);  
+      
+      
+      if(prev != NULL){
+        gotoxy(35,22);printf("%i",prev->carta.clave);
+      } 
+      else {
+        gotoxy(35,22);printf("X");
+      }
+      
+      if(next!=NULL){
+        gotoxy(40,22);printf("       %i\n   ", next->carta.clave); 
+      }   
+      else {
+        gotoxy(40,22);printf("       X\n   ");  
+      }
+
+
     }
     //A estas alturas ya tenemos la carta que jugó el jugador
   }
@@ -406,24 +421,24 @@ void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vec
   
   
   //De no haber errores, se muestra el siguiente mensaje por pantalla 
-  printf("===============================================================\n");
-  printf("       Partida guardada con éxito\n");
-  printf("                   ▒▒▒▒▒▒▒▒▒▄▄▄▄▒▄▄▄▒▒▒\n");
-  printf("                   ▒▒▒▒▒▒▄▀▀▓▓▓▀█░░░█▒▒\n");
-  printf("                   ▒▒▒▒▄▀▓▓▄██████▄░█▒▒\n");
-  printf("                   ▒▒▒▄█▄█▀░░▄░▄░█▀▀▄▒▒\n");
-  printf("                   ▒▒▄▀░██▄░░▀░▀░▀▄▓█▒▒\n");
-  printf("                   ▒▒▀▄░░▀░▄█▄▄░░▄█▄▀▒▒\n");
-  printf("                   ▒▒▒▒▀█▄▄░░▀▀▀█▀▓█▒▒▒\n");
-  printf("                   ▒▒▒▄▀▓▓▓▀██▀▀█▄▀▒▒▒▒\n");
-  printf("                   ▒▒█▓▓▄▀▀▀▄█▄▓▓▀█▒▒▒▒\n");
-  printf("                   ▒▒▀▄█░░░░░█▀▀▄▄▀█▒▒▒\n");
-  printf("                   ▒▒▒▄▀▀▄▄▄██▄▄█▀▓▓█▒▒\n");
-  printf("                   ▒▒█▀▓█████████▓▓▓█▒▒\n");
-  printf("                   ▒▒█▓▓██▀▀▀▒▒▒▀▄▄█▀▒▒\n");
-  printf("                   ▒▒▒▀▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n");
-  printf("                           Oki doki!\n");
-  printf("===============================================================\n");
+  gotoxy(30,1);printf("===============================================================\n");
+  gotoxy(30,2);printf("       Partida guardada con éxito\n");
+  gotoxy(30,3);printf("                   ▒▒▒▒▒▒▒▒▒▄▄▄▄▒▄▄▄▒▒▒\n");
+  gotoxy(30,4);printf("                   ▒▒▒▒▒▒▄▀▀▓▓▓▀█░░░█▒▒\n");
+  gotoxy(30,5);printf("                   ▒▒▒▒▄▀▓▓▄██████▄░█▒▒\n");
+  gotoxy(30,6);printf("                   ▒▒▒▄█▄█▀░░▄░▄░█▀▀▄▒▒\n");
+  gotoxy(30,7);printf("                   ▒▒▄▀░██▄░░▀░▀░▀▄▓█▒▒\n");
+  gotoxy(30,8);printf("                   ▒▒▀▄░░▀░▄█▄▄░░▄█▄▀▒▒\n");
+  gotoxy(30,9);printf("                   ▒▒▒▒▀█▄▄░░▀▀▀█▀▓█▒▒▒\n");
+  gotoxy(30,10);printf("                   ▒▒▒▄▀▓▓▓▀██▀▀█▄▀▒▒▒▒\n");
+  gotoxy(30,11);printf("                   ▒▒█▓▓▄▀▀▀▄█▄▓▓▀█▒▒▒▒\n");
+  gotoxy(30,12);printf("                   ▒▒▀▄█░░░░░█▀▀▄▄▀█▒▒▒\n");
+  gotoxy(30,13);printf("                   ▒▒▒▄▀▀▄▄▄██▄▄█▀▓▓█▒▒\n");
+  gotoxy(30,14);printf("                   ▒▒█▀▓█████████▓▓▓█▒▒\n");
+  gotoxy(30,15);printf("                   ▒▒█▓▓██▀▀▀▒▒▒▀▄▄█▀▒▒\n");
+  gotoxy(30,16);printf("                   ▒▒▒▀▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n");
+  gotoxy(30,17);printf("                           Oki doki!\n");
+  gotoxy(30,18);printf("===============================================================\n");
   fclose(fp);
   
 }
@@ -436,14 +451,22 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
   //fflush(stdin);
   scanf("%[^\n]s",archivo);
   getchar();
-  
+  gotoxy(30,1);printf("                                                                \n");
+  gotoxy(30,2);printf("                                                               \n");
+  gotoxy(30,3);printf("                                                                 \n\n");
+  gotoxy(30,4);printf("                                                               \n");
+  gotoxy(30,5);printf("                                                                \n");
+  gotoxy(30,6);printf("                                                               \n");
+  gotoxy(30,7);printf("                                                                \n");
+  gotoxy(30,8);printf("                                                                \n\n");
+
   //Se abre el archivo
   FILE *fp=fopen(archivo, "r");
   if(fp==NULL){
-    printf("\n===============================================================\n");
-    printf("                   Error al importar archivo...\n");
-    printf("     Asegúrese de importar al programa con el mismo nombre\n");
-    printf("===============================================================\n\n");
+    gotoxy(30,1);printf("\n===============================================================\n");
+    gotoxy(30,2);printf("                   Error al importar archivo...\n");
+    gotoxy(30,3);printf("     Asegúrese de importar al programa con el mismo nombre\n");
+    gotoxy(30,4);printf("===============================================================\n\n");
     return false;
   }
   char linea[300];
@@ -580,11 +603,20 @@ bool cargarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vecto
     }
     j++;
   }
+
+    gotoxy(30,1);printf("                                                                \n");
+    gotoxy(30,2);printf("                                                               \n");
+    gotoxy(30,3);printf("                                                                 \n\n");
+    gotoxy(30,4);printf("                                                               \n");
+    gotoxy(30,5);printf("                                                                \n");
+    gotoxy(30,6);printf("                                                               \n");
+    gotoxy(30,7);printf("                                                                \n");
+    gotoxy(30,8);printf("                                                                \n\n");
   
   
-  printf("\n===============================================================\n");
-  printf("        La importación de tareas fue hecha con éxito\n");
-  printf("===============================================================\n\n");
+  gotoxy(30,1);printf("\n===============================================================\n");
+  gotoxy(30,2);gotoxy(30,1);printf("        La importación de tareas fue hecha con éxito\n");
+  gotoxy(30,3);printf("===============================================================\n\n");
   fclose(fp);
 
   return true;
@@ -599,6 +631,7 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
   int color = 0;
   int turnoDe = 0;
   tipoMapa *CartaArribaMapa = malloc(sizeof(tipoMapa));
+  system("cls");
   if(cargar==false){
     CartaArribaMapa = repartir(mapa, vectorClaves);
     while(CartaArribaMapa->carta.codigo==13 || CartaArribaMapa->carta.codigo==14){
@@ -623,12 +656,14 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
   if(CartaArriba.codigo!=13 && CartaArriba.codigo){
     color=CartaArriba.color;  
   }
-  
   //int vueltas = 30;
   while(true){//(true)
     //mostrarListasJugadores(listaJugadores);
-    printf("\n\n\n==============================\n     TURNO DE: %s \n==============================\n\n\n", jugadorAct->jugador);
+    gotoxy(30,4);printf("==============================\n");
+    gotoxy(30,5);printf("       TURNO DE: %s \n", jugadorAct->jugador);
+    gotoxy(30,6);printf("==============================\n"); 
     tipoMapa *cartaJugada = turnojugador(jugadorAct->cartasJugador, CartaArribaMapa->carta, sumaDeCartas, &color); //aspecto: se muestran las cartas del jugador y la cartaArriba
+
     //Retornará la carta jugada, en caso de que el jugador no tenga una carta para jugar o
     //salte su turno, se retornará NULL.
     //tipoMapa *cartaJugada = firstList(jugadorAct->cartasJugador);
@@ -725,7 +760,6 @@ void theGame(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorCla
       }
     }  
   }
-  
 }
 
 void theGameBegins(List* listaJugadores, Map* mapa, int *contJugadores, int *vectorClaves){
@@ -754,21 +788,68 @@ Funciones:
 
 //Funciones principales
 
-void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves){
+void IniciarPartida(List *listaJugadores, Map *mapa, int *contJugadores, int *vectorClaves) {
   int opcion = 1;
-  while(opcion != 0){
-    printf("\033[0;37m");
-
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║  Ingrese una cantidad de jugadores entre 2 y 4              ║\n");
-    printf("║  Presione 0 para volver al menu inicial                     ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
+  system("cls");
+  while (opcion != 0) {
+    system("cls");
     
-    scanf("%d", contJugadores);
-    opcion=(*contJugadores);
+    gotoxy(30, 3);
+    printf("Ingrese una cantidad de jugadores entre 2 y 4 \n");
+    gotoxy(30, 4);
+    printf("2 jugadores\n");
+    gotoxy(30, 5);
+    printf("3 jugadores\n");    
+    gotoxy(30, 6);
+    printf("4 jugadores\n\n");
+
+    int flecha = 1;
+    int tecla;
+    while (true) {
+      gotoxy(28, flecha + 3);
+      printf(">");
+      tecla = getch();
+      gotoxy(28, flecha + 3);
+      printf(" ");
+
+      if (tecla == 13) {
+        break;  // Presionar Enter para seleccionar la opción
+      } else if (tecla == 224) {
+        tecla = getch();  // Leer la tecla de flecha
+        if (tecla == 72) {
+          // Flecha hacia arriba
+          if (flecha > 1) {
+            flecha--;
+          }
+        } else if (tecla == 80) {
+          // Flecha hacia abajo
+          if (flecha < 3) {
+            flecha++;
+          }
+        }
+      }
+    }
+
+    system("cls");  // Limpiar la pantalla
+
+    switch (flecha) {
+      case 1:
+        *contJugadores = 2;
+        break;
+      case 2:
+        *contJugadores = 3;
+        break;
+      case 3:
+        *contJugadores = 4;
+        break;
+    }
+
+    if (*contJugadores >= 2 && *contJugadores <= 4) {
+      theGameBegins(listaJugadores, mapa, contJugadores, vectorClaves);
+    }
+    
+    printf("\nPresione Enter para continuar...");
     getchar();
-  
-    if(opcion>=2 && opcion<=4) theGameBegins(listaJugadores,mapa, contJugadores,vectorClaves);   
   }
 }
 
@@ -810,39 +891,67 @@ void exportarDatos(List *listaJugadores, Map *mapa, int *contJugadores, int *vec
 }
 */
 
-
-
-void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves){
-  //Se crea una variable "opcion" la cual será una condicionante para el ciclo "while" base de nuestro programa
+void menu(List * listaJugadores, Map* mapa, int *contJugadores,int*vectorClaves) {
   int opcion = 1;
-  while(opcion != 0){
-printf("\033[0;31m");
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║                  DEFINITIVAMENTE UNON'T :D                 ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
-    printf("╔════════════════════════════•°🜧°•════════════════════════════╗\n");
-    printf("║  Presione 1 para iniciar partida                            ║\n");
-    printf("║  Presione 2 para cargar partida                             ║\n");
-    printf("║  Presione 0 para salir del juego                            ║\n");
-    printf("╚════════════════════════════•°🜥°•════════════════════════════╝\n\n");
-    //Se cambia el valor de la variable "opcion" con un valor que desee el usuario realizar
-    scanf("%d", &opcion);
-    getchar();
-    //Se utiliza un switch para acceder a las opciones de cada función
-    switch(opcion){
-      case 1: IniciarPartida(listaJugadores,mapa, contJugadores,vectorClaves);
-      break; 
-      case 2:{
+  while (opcion != 0) {
+    system("cls");  // Limpiar la pantalla
+    gotoxy(32, 2);
+    printf("DEFINITIVAMENTE UNON'T :D\n");
+    gotoxy(32, 4);
+    printf("\n");
+    gotoxy(32, 5);
+    printf("iniciar partida\n");
+    gotoxy(32, 6);
+    printf("cargar partida\n");
+    gotoxy(32, 7);
+    printf("salir del juego\n");
+
+
+    int flecha = 1;
+    int tecla;
+    while (true) {
+      gotoxy(30, flecha + 4);
+      printf(">");
+      tecla = getch();
+      gotoxy(30, flecha + 4);
+      printf(" ");
+
+      if (tecla == 13) {
+        break;  // Presionar Enter para seleccionar la opción
+      } else if (tecla == 224) {
+        tecla = getch();  // Leer la tecla de flecha
+        if (tecla == 72) {
+          // Flecha hacia arriba
+          if (flecha > 1) {
+            flecha--;
+          }
+        } else if (tecla == 80) {
+          // Flecha hacia abajo
+          if (flecha < 3) {
+            flecha++;
+          }
+        }
+      }
+    }
+
+    system("cls");  // Limpiar la pantalla
+
+    switch (flecha) {
+      case 1:
+        IniciarPartida(listaJugadores,mapa, contJugadores,vectorClaves);
+        break;
+      case 2:
         bool cargar = true;
-        theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);
-      } 
-      case 3: mostrarListasJugadores(listaJugadores);
-      break;
-      //en caso de ser cero se imprime lo sgte. Para finalizar el programa
-      case 0:
+        theGame(listaJugadores, mapa, contJugadores, vectorClaves, cargar);      
+        break;
+      case 3:
         printf("         by GG WP//");
+        return;  
         break;
     }
+    
+    printf("\nPresione Enter para continuar...");
+    getchar();
   }
 }
 

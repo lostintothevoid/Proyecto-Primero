@@ -1,1 +1,2 @@
-gcc main.c Map.c list_answer.c
+
+gcc main.c Map.c list_answer.c -o UNONT 
