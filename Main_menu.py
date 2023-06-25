@@ -55,7 +55,6 @@ class Inicio:
         ctk.CTkButton(self.root, text="Iniciar partida", command=ir_a_prejuego).pack(pady=10)
         #ctk.CTkButton(self.root, text="Opciones").pack(pady=10)
 
-
         self.root.mainloop()
 #-----funciones extras------
 class funciones:
@@ -86,18 +85,10 @@ class funciones:
                 ventana.destroy()
             self.entrada.delete(0, "end")
 
-
-
-
         ctk.CTkButton(ventana, command=entry_process, text="ingresar", anchor="center").pack(pady=10)
 
         self.cont_players = ctk.CTkLabel(ventana, text="jugadores registrados: 0")
         self.cont_players.pack()
-
-
-
-
-
 
     def ventana_jugadores_3(self):
         ventana = ctk.CTkToplevel()
@@ -125,16 +116,10 @@ class funciones:
                 ventana.destroy()
             self.entrada.delete(0, "end")
 
-
-
-
         ctk.CTkButton(ventana, command=entry_process, text="ingresar", anchor="center").pack(pady=10)
 
         self.cont_players = ctk.CTkLabel(ventana, text="jugadores registrados: 0")
         self.cont_players.pack()
-
-
-
 
     def ventana_jugadores_4(self):
 
@@ -169,16 +154,7 @@ class funciones:
         self.cont_players = ctk.CTkLabel(ventana, text="jugadores registrados: 0")
         self.cont_players.pack()
 
-
-
-
-
-
-    
-
-
 objeto_func = funciones()
-
 
 #-------nueva ventana-------
 class opciones_pre_juego:
@@ -199,8 +175,5 @@ class opciones_pre_juego:
         ctk.CTkButton(self.root, text="2 jugadores", command=objeto_func.ventana_jugadores_2, width=200, height=100).pack(pady=10)
         ctk.CTkButton(self.root, text="3 jugadores", command=objeto_func.ventana_jugadores_3, width=200, height=100).pack(pady=10)
         ctk.CTkButton(self.root, text="4 jugadores", command=objeto_func.ventana_jugadores_4, width=200, height=100).pack(pady=10)
-
-
-
 
         self.root.mainloop() 
